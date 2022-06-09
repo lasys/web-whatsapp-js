@@ -14,6 +14,7 @@ app.use(helmet()); // https://expressjs.com/en/advanced/best-practice-security.h
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(express.text());
 app.use(cookieParser());
 
 app.use('/', indexRouter);
