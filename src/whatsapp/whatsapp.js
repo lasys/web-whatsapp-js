@@ -2,8 +2,6 @@ const { Client, LocalAuth, Chat, ChatId } = require('whatsapp-web.js');
 const fs = require('fs');
 const { exec } = require("child_process");
 
-// TODO: return ShrinkedObjects -> always new objects with only neccessary properties
-
 class WhatsApp {
     qr_code = "";
     status = "";
@@ -90,6 +88,7 @@ class WhatsApp {
 
     async get_message_by_id(messageId) {
         let message = await this.client.getMessageById(messageId);
+
         if (!message) {
             throw("Message not found!");
         }
@@ -99,16 +98,25 @@ class WhatsApp {
 
         let mediaMessage = await message.downloadMedia();
 
+        if (message._data.type === "image") {
+            return mediaMessage;
+        }
+
         try {
             if (mediaMessage.data) {
+                // TODO: move temp-files into  temp-dir and better naming
                 let buffer = Buffer.from(mediaMessage.data, 'base64');
                 fs.writeFileSync('temp', buffer);
+
                 let command = "ffmpeg -y -i temp -acodec libmp3lame temp.mp3";
-                await exec(command);
-                await exec("ls -la");
-                // console.log('stdout:', stdout);
-                // console.error('stderr:', stderr);
-                let data = fs.readFileSync('temp.mp3').toString('base64');
+                const command_exec = exec(command);
+                // wait until command is really done! await not enough!
+                await new Promise( (resolve) => {
+                    command_exec.on('close', resolve)
+                });
+
+                let file = fs.readFileSync('temp.mp3');
+                let data = Buffer.from(file, 'binary').toString('base64');
                 mediaMessage.data = data;
             }
 
@@ -116,8 +124,6 @@ class WhatsApp {
             console.error(err);
             throw(err);
         }
-
-
 
         return mediaMessage;
     }
