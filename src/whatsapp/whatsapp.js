@@ -58,11 +58,18 @@ class WhatsApp {
         let messages = await chat.fetchMessages({limit: limit});
         let simplifiedMessages = [];
         for (const message of messages) {
+            let name = "";
+            if (chat.isGroup) {
+                let contact = await message.getContact();
+                name = contact.name;
+            }
             let sm = {
                 id: message.id._serialized,
                 fromMe: message.fromMe,
                 content: message._data.body,
-                type: message._data.type
+                type: message._data.type,
+                name: name,
+                timestamp: message.timestamp
             };
             simplifiedMessages.push(sm);
         }
@@ -71,7 +78,7 @@ class WhatsApp {
     }
 
     async get_profile_pic_url(chatId) {
-        return this.client.getProfilePicUrl(chatId)
+        return this.client.getProfilePicUrl(chatId);
     }
 
     async send_message(chatId, content) {
@@ -97,27 +104,31 @@ class WhatsApp {
         }
 
         let mediaMessage = await message.downloadMedia();
+        let temp_directory = "src/tmp_files/";
 
         if (message._data.type === "image") {
+            let buff = new Buffer(mediaMessage.data, 'base64');
+            fs.writeFileSync(temp_directory + 'temp_img.jpeg', buff);
+            mediaMessage.data = buff;
             return mediaMessage;
         }
 
         try {
             if (mediaMessage.data) {
-                // TODO: move temp-files into  temp-dir and better naming
-                let buffer = Buffer.from(mediaMessage.data, 'base64');
-                fs.writeFileSync('temp', buffer);
 
-                let command = "ffmpeg -y -i temp -acodec libmp3lame temp.mp3";
+                let buffer = Buffer.from(mediaMessage.data, 'base64');
+                fs.writeFileSync(temp_directory + 'temp_audio', buffer);
+
+                let cdToTempDirectory = "cd " + temp_directory
+                let command = cdToTempDirectory + " && ffmpeg -y -i temp_audio -acodec libmp3lame temp_audio.mp3";
                 const command_exec = exec(command);
                 // wait until command is really done! await not enough!
                 await new Promise( (resolve) => {
                     command_exec.on('close', resolve)
                 });
 
-                let file = fs.readFileSync('temp.mp3');
-                let data = Buffer.from(file, 'binary').toString('base64');
-                mediaMessage.data = data;
+                let file = fs.readFileSync(temp_directory + 'temp_audio.mp3');
+                mediaMessage.data = Buffer.from(file, 'binary');
             }
 
         } catch (err) {

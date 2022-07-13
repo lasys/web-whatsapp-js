@@ -68,7 +68,7 @@ router.get('/chats/:chatId/picture', async (req, res) => {
 
   try {
     let pictureUrl = await whatsApp.get_profile_pic_url(chatId);
-    res.send( pictureUrl );
+    res.redirect( pictureUrl );
   } catch (e) {
     return res.status(500).send(e);
   }
@@ -106,7 +106,8 @@ router.get('/messages/:messageId', async (req, res) => {
 
   try {
     let message = await whatsApp.get_message_by_id(messageId);
-    res.send(message);
+    res.set('Content-Type', message.mimetype);
+    res.send(message.data);
   } catch (e) {
     return res.status(500).send(e);
   }
