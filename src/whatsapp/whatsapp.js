@@ -24,6 +24,7 @@ class WhatsApp {
         this.client.on('ready', () => {
             this.isReady = true;
             this.status = 'Client is ready!';
+            this.client.getContacts();
             console.log(this.status);
         });
         this.client.on('authenticated', () => {
@@ -62,6 +63,9 @@ class WhatsApp {
             if (chat.isGroup) {
                 let contact = await message.getContact();
                 name = contact.name;
+                if (name == null) {
+                    name = message.author.split("@")[0];
+                }
             }
             let sm = {
                 id: message.id._serialized,
