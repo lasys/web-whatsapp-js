@@ -73,6 +73,7 @@ class WhatsApp {
                 content: message._data.body,
                 type: message._data.type,
                 name: name,
+                isGroup: chat.isGroup,
                 timestamp: message.timestamp
             };
             simplifiedMessages.push(sm);
