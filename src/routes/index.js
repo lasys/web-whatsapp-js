@@ -113,4 +113,10 @@ router.get('/messages/:messageId', async (req, res) => {
   }
 });
 
+
+router.get('/contacts', async (req, res) => {
+  await whatsApp.get_contacts()
+  return res.status(200)
+});
+
 module.exports = router;

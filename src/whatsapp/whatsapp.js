@@ -143,6 +143,13 @@ class WhatsApp {
 
         return mediaMessage;
     }
+
+    async get_contacts() {
+        let contacts = await self.client.getContacts();
+        for (const contact in contacts) {
+            console.log(contact)
+        }
+    }
 }
 
 module.exports = WhatsApp // 👈 Export class
