@@ -53,6 +53,7 @@ router.get('/chats/:chatId/messages', async (req, res) => {
     let messages = await whatsApp.get_messages(chatId, limit);
     res.send(messages);
   } catch (e) {
+    console.log(e);
     return res.status(500).send(e);
   }
 

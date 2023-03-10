@@ -9,7 +9,7 @@ class WhatsApp {
 
     constructor() {
         this.client = new Client({
-            puppeteer: { headless: false },
+            puppeteer: { headless: true },
             authStrategy: new LocalAuth('13299107891666257')
         });
     }
@@ -66,6 +66,7 @@ class WhatsApp {
             let name = "";
             if (chat.isGroup) {
                 let contact = await message.getContact();
+                console.log(contact);
                 name = contact.name;
                 if (name == null) {
                     name = message.author.split("@")[0];
