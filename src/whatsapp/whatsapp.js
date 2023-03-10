@@ -24,7 +24,11 @@ class WhatsApp {
         this.client.on('ready', () => {
             this.isReady = true;
             this.status = 'Client is ready!';
-            this.client.getContacts();
+            try {
+                this.client.getContacts();
+            } catch (e) {
+                console.error(e)
+            }
             console.log(this.status);
         });
         this.client.on('authenticated', () => {
