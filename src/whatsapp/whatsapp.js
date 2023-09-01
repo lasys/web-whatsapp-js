@@ -15,7 +15,6 @@ class WhatsApp {
     }
 
     init() {
-        this.client.initialize();
         this.client.on('qr', (qr) => {
             this.qr_code = qr;
             this.status = "QR received: " + qr;
@@ -39,7 +38,9 @@ class WhatsApp {
             this.status = 'Auth Failure: !' + error;
             console.log(this.status);
         });
-        this.status = "initialized client"
+
+        this.client.initialize();
+        this.status = "initialized client";
         console.log(this.status);
     }
 
@@ -150,7 +151,7 @@ class WhatsApp {
     }
 
     async get_contacts() {
-        let contacts = await self.client.getContacts();
+        let contacts = await this.client.getContacts();
         for (const contact in contacts) {
             console.log(contact)
         }

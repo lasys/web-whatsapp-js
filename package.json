@@ -17,7 +17,7 @@
     "http-errors": "^1.8.0",
     "morgan": "^1.10.0",
     "qr-image": "^3.2.0",
-    "whatsapp-web.js": "github:lasys/whatsapp-web.js"
+    "whatsapp-web.js": "1.22.2-alpha.0 "
   },
   "devDependencies": {
     "eslint": "^5.16.0",
